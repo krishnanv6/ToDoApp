@@ -798,6 +798,30 @@ input[type="checkbox"].select-cb {
   justify-content: flex-end;
 }
 
+/* ===== Auth page navigation link ===== */
+.auth-switch-link {
+  margin-top: 1.25rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity var(--t);
+}
+
+.link-btn:hover { opacity: 0.8; }
+
 /* ===== Responsive ===== */
 @media (max-width: 560px) {
   .add-form { flex-direction: column; }

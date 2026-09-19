@@ -10,7 +10,7 @@ class UserLogin(BaseModel):
 
 class UserCreate(BaseModel):
     username: str = Field(min_length=1, max_length=150)
-    password: str = Field(min_length=8)
+    password: str = Field(min_length=1)
 
 
 class UserOut(BaseModel):
@@ -48,6 +48,11 @@ class TodoUpdate(BaseModel):
         return v
 
 
+class TokenOut(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+
 class TodoOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -57,3 +62,4 @@ class TodoOut(BaseModel):
     due_date: date | None
     completed: bool
     created_at: datetime
+    owner_id: int

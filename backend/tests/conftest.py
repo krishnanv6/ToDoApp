@@ -38,6 +38,18 @@ def reset_db():
     Base.metadata.drop_all(bind=_engine)
 
 
+@pytest.fixture(autouse=True)
+def reset_rate_limiter():
+    """Clear the in-memory rate limiter between tests so tests don't interfere."""
+    from limiter import limiter
+    storage = getattr(limiter, "_storage", None)
+    if storage is not None:
+        storage.reset()
+    yield
+    if storage is not None:
+        storage.reset()
+
+
 @pytest.fixture
 def client():
     return TestClient(app)
