@@ -5,6 +5,8 @@ pyodbc
 bcrypt
 PyJWT
 python-multipart
+slowapi
 pytest
 httpx
 pytest-asyncio
+pytest-html
