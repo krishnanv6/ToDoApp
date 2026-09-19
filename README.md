@@ -8,9 +8,11 @@ See [PRD.md](./PRD.md) for full product requirements.
 
 - Sign up / log in with a username and password (JWT-based auth)
 - Create, list, complete/uncomplete, and delete todos — each user only sees their own
-- Priority (Low/Medium/High, shown as a color-coded badge) and optional due date per todo
-- Delete requires a confirmation prompt (trash icon button)
-- Modern, responsive UI with light/dark mode support
+- Priority (Low/Medium/High, color-coded badge) and optional due date per todo; overdue dates highlighted in red
+- Filter todos by status: **All**, **Active**, or **Completed** — with live count badges
+- Bulk select via per-row checkboxes + Select All toggle; **bulk complete** or **bulk delete** selected items in one click
+- Delete (single or bulk) requires a custom animated modal confirmation — no browser `alert()`
+- Modern, responsive UI with light/dark mode toggle
 
 ## Project Structure
 
@@ -34,8 +36,11 @@ frontend/
     App.css, index.css        # styling
     components/
       AuthPage.jsx              # login / signup form
-      TodoPage.jsx                # add-todo form + todo list
-      TodoItem.jsx                  # single todo row (toggle, delete)
+      TodoPage.jsx              # main page: state, filter logic, bulk actions
+      AddTodoForm.jsx           # new-task input card
+      TodoList.jsx              # list wrapper with select-all header
+      TodoItem.jsx              # single todo row (toggle, delete)
+      ConfirmModal.jsx          # reusable animated modal for delete confirmations
   package.json
 ```
 
