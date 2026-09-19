@@ -4,7 +4,7 @@ import { loginWithToken } from '../api'
 
 export default function Login({ onNavigateRegister }) {
   const { login } = useAuth()
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -14,7 +14,7 @@ export default function Login({ onNavigateRegister }) {
     setError('')
     setLoading(true)
     try {
-      const data = await loginWithToken(email, password)
+      const data = await loginWithToken(username, password)
       login(data.access_token)
     } catch (err) {
       setError(err.message)
@@ -39,14 +39,14 @@ export default function Login({ onNavigateRegister }) {
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-field">
-            <label>Email</label>
+            <label>Username</label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="your_username"
               required
-              autoComplete="email"
+              autoComplete="username"
             />
           </div>
           <div className="form-field">

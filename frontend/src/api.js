@@ -63,19 +63,19 @@ export function getMe() {
 
 // --- JWT auth ---
 
-export function loginWithToken(email, password) {
+export function loginWithToken(username, password) {
   return request('/auth/login', {
     method: 'POST',
     headers: jsonHeaders(),
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ username, password }),
   })
 }
 
-export function registerUser(email, password) {
+export function registerUser(username, password) {
   return request('/auth/register', {
     method: 'POST',
     headers: jsonHeaders(),
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ username, password }),
   })
 }
 
