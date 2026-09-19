@@ -26,14 +26,14 @@ function CalIcon() {
   )
 }
 
-export default function TodoItem({ todo, token, onUpdate, onDelete, selected, onSelect }) {
+export default function TodoItem({ todo, onUpdate, onDelete, selected, onSelect }) {
   const [loading, setLoading] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
   async function handleToggle() {
     setLoading(true)
     try {
-      const updated = await updateTodo(token, todo.id, { completed: !todo.completed })
+      const updated = await updateTodo(todo.id, { completed: !todo.completed })
       onUpdate(updated)
     } finally {
       setLoading(false)
@@ -43,7 +43,7 @@ export default function TodoItem({ todo, token, onUpdate, onDelete, selected, on
   async function handleDelete() {
     setLoading(true)
     try {
-      await deleteTodo(token, todo.id)
+      await deleteTodo(todo.id)
       onDelete(todo.id)
     } finally {
       setLoading(false)

@@ -1,28 +1,20 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getMe } from './api'
 import AuthPage from './components/AuthPage'
 import TodoPage from './components/TodoPage'
 
 export default function App() {
-  const [token, setToken] = useState(() => localStorage.getItem('todo_token') || null)
-  const [user, setUser] = useState(() => localStorage.getItem('todo_user') || null)
+  const [user, setUser] = useState(undefined) // undefined = checking, null = not logged in
 
-  function handleLogin(newToken, username) {
-    localStorage.setItem('todo_token', newToken)
-    localStorage.setItem('todo_user', username)
-    setToken(newToken)
-    setUser(username)
-  }
+  useEffect(() => {
+    getMe()
+      .then(setUser)
+      .catch(() => setUser(null))
+  }, [])
 
-  function handleLogout() {
-    localStorage.removeItem('todo_token')
-    localStorage.removeItem('todo_user')
-    setToken(null)
-    setUser(null)
-  }
+  if (user === undefined) return null
 
-  if (!token) {
-    return <AuthPage onLogin={handleLogin} />
-  }
+  if (!user) return <AuthPage onLogin={setUser} />
 
-  return <TodoPage token={token} user={user} onLogout={handleLogout} />
+  return <TodoPage user={user} onLogout={() => setUser(null)} />
 }

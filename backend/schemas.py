@@ -1,11 +1,16 @@
 from datetime import date, datetime
 from typing import Literal
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
 
 
 class UserCreate(BaseModel):
-    username: str
-    password: str
+    username: str = Field(min_length=1, max_length=150)
+    password: str = Field(min_length=8)
 
 
 class UserOut(BaseModel):
@@ -14,11 +19,6 @@ class UserOut(BaseModel):
     id: int
     username: str
     created_at: datetime
-
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
 
 
 class TodoCreate(BaseModel):
@@ -57,4 +57,3 @@ class TodoOut(BaseModel):
     due_date: date | None
     completed: bool
     created_at: datetime
-    owner_id: int

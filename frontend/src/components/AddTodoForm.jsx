@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { createTodo } from '../api'
 
-export default function AddTodoForm({ token, onAdd }) {
+export default function AddTodoForm({ onAdd }) {
   const [title, setTitle] = useState('')
   const [priority, setPriority] = useState('Medium')
   const [dueDate, setDueDate] = useState('')
@@ -13,7 +13,7 @@ export default function AddTodoForm({ token, onAdd }) {
     if (!title.trim()) { setError('Title is required'); return }
     setError(''); setLoading(true)
     try {
-      const todo = await createTodo(token, { title: title.trim(), priority, due_date: dueDate || null })
+      const todo = await createTodo({ title: title.trim(), priority, due_date: dueDate || null })
       onAdd(todo)
       setTitle(''); setPriority('Medium'); setDueDate('')
     } catch (err) {

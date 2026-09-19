@@ -18,8 +18,8 @@ export default function AuthPage({ onLogin }) {
     setError(''); setSuccessMsg(''); setLoading(true)
     try {
       if (tab === 'login') {
-        const data = await login(username, password)
-        onLogin(data.access_token, username)
+        const user = await login(username, password)
+        onLogin(user)
       } else {
         await signup(username, password)
         setSuccessMsg('Account created! You can now log in.')
@@ -73,6 +73,7 @@ export default function AuthPage({ onLogin }) {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
+              minLength={8}
               autoComplete={tab === 'login' ? 'current-password' : 'new-password'}
             />
           </div>

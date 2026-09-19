@@ -1,6 +1,6 @@
 import TodoItem from './TodoItem'
 
-export default function TodoList({ todos, token, onUpdate, onDelete, selectedIds, onSelect, onSelectAll }) {
+export default function TodoList({ todos, onUpdate, onDelete, selectedIds, onSelect, onSelectAll }) {
   if (todos.length === 0) {
     return (
       <div className="empty-state">
@@ -36,7 +36,6 @@ export default function TodoList({ todos, token, onUpdate, onDelete, selectedIds
           <TodoItem
             key={todo.id}
             todo={todo}
-            token={token}
             onUpdate={onUpdate}
             onDelete={onDelete}
             selected={selectedIds.has(todo.id)}

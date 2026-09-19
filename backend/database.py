@@ -20,9 +20,14 @@ def _pick_driver() -> str:
     raise RuntimeError(f"No suitable SQL Server ODBC driver found. Installed: {available}")
 
 _driver = quote_plus(_pick_driver())
-_password = quote_plus(os.getenv("MSSQL_SA_PASSWORD", ""))
+_user = quote_plus(os.getenv("MSSQL_USER", "todoapp"))
+_password = quote_plus(os.environ["MSSQL_PASSWORD"])  # crash on startup if not set
+_host = os.getenv("MSSQL_HOST", "localhost")
+_port = os.getenv("MSSQL_PORT", "1433")
+_db = os.getenv("MSSQL_DB", "claudetodo")
+
 SQLALCHEMY_DATABASE_URL = (
-    f"mssql+pyodbc://sa:{_password}@localhost:1433/claudetodo"
+    f"mssql+pyodbc://{_user}:{_password}@{_host}:{_port}/{_db}"
     f"?driver={_driver}&TrustServerCertificate=yes"
 )
 

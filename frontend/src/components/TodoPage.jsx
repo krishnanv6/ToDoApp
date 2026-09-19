@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { deleteTodo, getTodos, updateTodo } from '../api'
+import { deleteTodo, getTodos, logout, updateTodo } from '../api'
 import AddTodoForm from './AddTodoForm'
 import TodoList from './TodoList'
 import ConfirmModal from './ConfirmModal'
@@ -35,7 +35,7 @@ function TrashIcon() {
   )
 }
 
-export default function TodoPage({ token, user, onLogout }) {
+export default function TodoPage({ user, onLogout }) {
   const [todos, setTodos] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -54,11 +54,16 @@ export default function TodoPage({ token, user, onLogout }) {
   }, [darkMode])
 
   useEffect(() => {
-    getTodos(token)
+    getTodos()
       .then(setTodos)
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false))
-  }, [token])
+  }, [])
+
+  async function handleLogout() {
+    await logout().catch(() => {})
+    onLogout()
+  }
 
   function handleAdd(todo) { setTodos((prev) => [todo, ...prev]) }
 
@@ -87,7 +92,7 @@ export default function TodoPage({ token, user, onLogout }) {
     setBulkCompleting(true)
     const ids = [...selectedIds]
     const results = await Promise.allSettled(
-      ids.map((id) => updateTodo(token, id, { completed: true }))
+      ids.map((id) => updateTodo(id, { completed: true }))
     )
     results.forEach((r) => {
       if (r.status === 'fulfilled') handleUpdate(r.value)
@@ -99,7 +104,7 @@ export default function TodoPage({ token, user, onLogout }) {
   async function handleBulkDelete() {
     setBulkDeleting(true)
     const ids = [...selectedIds]
-    await Promise.allSettled(ids.map((id) => deleteTodo(token, id)))
+    await Promise.allSettled(ids.map((id) => deleteTodo(id)))
     setTodos((prev) => prev.filter((t) => !selectedIds.has(t.id)))
     setSelectedIds(new Set())
     setBulkDeleting(false)
@@ -133,17 +138,17 @@ export default function TodoPage({ token, user, onLogout }) {
               <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
               <circle cx="12" cy="7" r="4" />
             </svg>
-            <span>{user}</span>
+            <span>{user.username}</span>
           </div>
           <button className="btn-icon" onClick={() => setDarkMode((d) => !d)} title="Toggle dark mode">
             {darkMode ? <SunIcon /> : <MoonIcon />}
           </button>
-          <button className="btn-secondary" onClick={onLogout}>Log out</button>
+          <button className="btn-secondary" onClick={handleLogout}>Log out</button>
         </div>
       </header>
 
       <main className="main-content">
-        <AddTodoForm token={token} onAdd={handleAdd} />
+        <AddTodoForm onAdd={handleAdd} />
 
         <div className="filter-bar">
           {['all', 'active', 'completed'].map((f) => (
@@ -166,12 +171,7 @@ export default function TodoPage({ token, user, onLogout }) {
         {selectedCount > 0 && (
           <div className="bulk-bar">
             <span className="bulk-count">{selectedCount} selected</span>
-            <button
-              className="btn-ghost"
-              onClick={() => setSelectedIds(new Set())}
-            >
-              Clear
-            </button>
+            <button className="btn-ghost" onClick={() => setSelectedIds(new Set())}>Clear</button>
             <button
               className="btn-complete"
               onClick={handleBulkComplete}
@@ -193,7 +193,6 @@ export default function TodoPage({ token, user, onLogout }) {
         {!loading && (
           <TodoList
             todos={filteredTodos}
-            token={token}
             onUpdate={handleUpdate}
             onDelete={handleDelete}
             selectedIds={selectedIds}
