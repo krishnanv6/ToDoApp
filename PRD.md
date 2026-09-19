@@ -1,7 +1,7 @@
 # Product Requirements Document: MyToDos
 
-**Version:** 1.2
-**Date:** September 18, 2026
+**Version:** 1.3
+**Date:** September 19, 2026
 **Author:** Product Team
 
 ---
@@ -57,6 +57,15 @@ Individuals looking for a simple personal task tracker they can log into and acc
 - Show title, priority, due date, and completion status.
 - Visually distinguish completed vs. incomplete todos (e.g., strikethrough).
 
+### 6.3a Status Filter
+- A **filter bar** is displayed above the todo list with three options: **All**, **Active**, **Completed**.
+- Each filter option shows a count badge reflecting the current number of todos in that category.
+- Selecting **Active** shows only todos where `completed = false`.
+- Selecting **Completed** shows only todos where `completed = true`.
+- Selecting **All** (default) shows every todo regardless of status.
+- Filtering is performed client-side; no extra API requests are made.
+- Changing the active filter clears any current bulk selection to prevent operating on hidden items.
+
 ### 6.4 Mark Todo as Complete
 - User can toggle a todo between complete and incomplete states.
 - UI updates immediately to reflect the state change.
@@ -82,6 +91,7 @@ Individuals looking for a simple personal task tracker they can log into and acc
 | 3 | User | Mark a todo as complete | I know what I've finished |
 | 4 | User | Delete a todo | I can remove tasks I no longer need |
 | 5 | User | See all my todos in one place | I can review my task list |
+| 6 | User | Filter todos by status (All / Active / Completed) | I can focus on what still needs to be done or review what I've finished |
 
 ## 8. Technical Requirements
 
@@ -133,6 +143,7 @@ Individuals looking for a simple personal task tracker they can log into and acc
     - Title (strikethrough when completed), color-coded priority badge, due date (highlighted red when overdue).
     - A left accent border on each card colored by priority (red/amber/green).
     - Trash **icon** button (SVG, no text) that triggers a **custom modal confirm dialog** before deleting.
+  - **Status filter bar**: segmented pill control (All / Active / Completed) rendered between the add form and the todo list; each option includes a live count badge; defaults to "All" on load (see 6.3a).
   - **Bulk action bar**: appears when ≥1 todos are selected; shows count and "Delete {n}" button; triggers a custom modal before deleting all selected (see 6.6).
   - **Select All / Deselect All** checkbox at the top of the list.
   - Priority is shown as a color-coded pill badge (High=red, Medium=amber, Low=green).
@@ -181,6 +192,7 @@ Tracks concrete decisions made while implementing this PRD, so the document stay
 - **Frontend stack:** Vite + React, no router library (two views toggled by local auth state, per the "minimal app" goal). Auth token persisted in `localStorage`.
 - **CORS:** backend allows `http://localhost:5173` (Vite dev server) for local development.
 - **UI:** polished card-based layout with Inter typeface, indigo gradient accent, left priority-color border on each todo card, smooth hover/transition animations, and light/dark mode support. Priority shown as a color-coded pill badge. Delete uses an SVG trash icon (no text) and triggers a custom animated modal confirm dialog (no `window.confirm`). Overdue dates are highlighted red.
+- **Status filter:** pill-style filter bar (All / Active / Completed) between the add form and the list; each tab shows a live count badge; filtering is purely client-side (no extra API calls); switching filter clears bulk selection.
 - **Bulk delete:** select checkboxes on each row + "Select All" toggle; bulk action bar with count + "Delete {n}" button; custom modal confirmation before bulk delete executes.
 - **Single-delete modal:** custom `ConfirmModal` component (animated backdrop + scaled card) used for both single and bulk deletes.
 - **Auth page:** logo icon, app name, tagline, pill-style tab switcher, uppercase-label form fields.

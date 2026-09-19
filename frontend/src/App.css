@@ -416,6 +416,63 @@ input:focus, select:focus {
 .date-input { flex: 0 0 155px; }
 .add-form .btn-primary { flex: 0 0 auto; align-self: stretch; padding-left: 1.25rem; padding-right: 1.25rem; }
 
+/* ===== Status filter bar ===== */
+.filter-bar {
+  display: flex;
+  gap: 0;
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border);
+}
+
+.filter-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all var(--t);
+  font-family: inherit;
+}
+
+.filter-btn.active {
+  background: var(--surface);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: var(--shadow);
+}
+
+.filter-btn:hover:not(.active) { color: var(--text); background: var(--surface); }
+
+.filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background: var(--accent-light);
+  color: var(--accent);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.filter-btn:not(.active) .filter-count {
+  background: var(--border);
+  color: var(--text-muted);
+}
+
 /* ===== List header / bulk bar ===== */
 .list-header {
   display: flex;
