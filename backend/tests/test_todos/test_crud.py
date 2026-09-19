@@ -352,3 +352,59 @@ def test_delete_one_leaves_siblings_intact(client, alice, auth):
     assert id1 in remaining_ids
     assert id3 in remaining_ids
     assert id2 not in remaining_ids
+
+
+# ---------- completed status (filter support) ----------
+# The frontend status filter relies on the list endpoint returning ALL todos with
+# accurate `completed` values so the client can filter All / Active / Completed.
+
+def test_list_includes_completed_todos(client, alice, auth):
+    todo_id = _create(client, alice, auth, "Done task").json()["id"]
+    client.patch(f"/todos/{todo_id}", json={"completed": True}, headers=auth.header(alice))
+    todos = client.get("/todos", headers=auth.header(alice)).json()
+    assert any(t["id"] == todo_id and t["completed"] is True for t in todos)
+
+
+def test_list_includes_both_active_and_completed(client, alice, auth):
+    active_id = _create(client, alice, auth, "Active").json()["id"]
+    done_id = _create(client, alice, auth, "Done").json()["id"]
+    client.patch(f"/todos/{done_id}", json={"completed": True}, headers=auth.header(alice))
+    todos = client.get("/todos", headers=auth.header(alice)).json()
+    completed_flags = {t["id"]: t["completed"] for t in todos}
+    assert completed_flags[active_id] is False
+    assert completed_flags[done_id] is True
+
+
+def test_list_active_count_decreases_after_completion(client, alice, auth):
+    ids = [_create(client, alice, auth, f"T{i}").json()["id"] for i in range(3)]
+    client.patch(f"/todos/{ids[0]}", json={"completed": True}, headers=auth.header(alice))
+    todos = client.get("/todos", headers=auth.header(alice)).json()
+    active = [t for t in todos if not t["completed"]]
+    done = [t for t in todos if t["completed"]]
+    assert len(active) == 2
+    assert len(done) == 1
+
+
+def test_list_completed_count_after_marking_all(client, alice, auth):
+    ids = [_create(client, alice, auth, f"T{i}").json()["id"] for i in range(4)]
+    for todo_id in ids:
+        client.patch(f"/todos/{todo_id}", json={"completed": True}, headers=auth.header(alice))
+    todos = client.get("/todos", headers=auth.header(alice)).json()
+    assert all(t["completed"] is True for t in todos)
+    assert len(todos) == 4
+
+
+def test_list_completed_field_accurate_after_unmark(client, alice, auth):
+    todo_id = _create(client, alice, auth, "Task").json()["id"]
+    client.patch(f"/todos/{todo_id}", json={"completed": True}, headers=auth.header(alice))
+    client.patch(f"/todos/{todo_id}", json={"completed": False}, headers=auth.header(alice))
+    todo = next(t for t in client.get("/todos", headers=auth.header(alice)).json() if t["id"] == todo_id)
+    assert todo["completed"] is False
+
+
+def test_list_does_not_auto_filter_completed_todos(client, alice, auth):
+    todo_id = _create(client, alice, auth, "Completed task").json()["id"]
+    client.patch(f"/todos/{todo_id}", json={"completed": True}, headers=auth.header(alice))
+    todos = client.get("/todos", headers=auth.header(alice)).json()
+    assert len(todos) == 1
+    assert todos[0]["completed"] is True

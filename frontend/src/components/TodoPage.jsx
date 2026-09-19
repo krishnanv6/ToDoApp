@@ -43,6 +43,7 @@ export default function TodoPage({ token, user, onLogout }) {
   const [showBulkConfirm, setShowBulkConfirm] = useState(false)
   const [bulkDeleting, setBulkDeleting] = useState(false)
   const [bulkCompleting, setBulkCompleting] = useState(false)
+  const [statusFilter, setStatusFilter] = useState('all')
   const [darkMode, setDarkMode] = useState(
     () => localStorage.getItem('dark_mode') === 'true'
   )
@@ -105,6 +106,12 @@ export default function TodoPage({ token, user, onLogout }) {
     setShowBulkConfirm(false)
   }
 
+  const filteredTodos = todos.filter((t) => {
+    if (statusFilter === 'active') return !t.completed
+    if (statusFilter === 'completed') return t.completed
+    return true
+  })
+
   const selectedCount = selectedIds.size
 
   return (
@@ -138,6 +145,21 @@ export default function TodoPage({ token, user, onLogout }) {
       <main className="main-content">
         <AddTodoForm token={token} onAdd={handleAdd} />
 
+        <div className="filter-bar">
+          {['all', 'active', 'completed'].map((f) => (
+            <button
+              key={f}
+              className={`filter-btn${statusFilter === f ? ' active' : ''}`}
+              onClick={() => { setStatusFilter(f); setSelectedIds(new Set()) }}
+            >
+              {f.charAt(0).toUpperCase() + f.slice(1)}
+              {f === 'all' && <span className="filter-count">{todos.length}</span>}
+              {f === 'active' && <span className="filter-count">{todos.filter((t) => !t.completed).length}</span>}
+              {f === 'completed' && <span className="filter-count">{todos.filter((t) => t.completed).length}</span>}
+            </button>
+          ))}
+        </div>
+
         {loading && <p className="loading">Loading…</p>}
         {error && <p className="error-msg">{error}</p>}
 
@@ -170,7 +192,7 @@ export default function TodoPage({ token, user, onLogout }) {
 
         {!loading && (
           <TodoList
-            todos={todos}
+            todos={filteredTodos}
             token={token}
             onUpdate={handleUpdate}
             onDelete={handleDelete}
