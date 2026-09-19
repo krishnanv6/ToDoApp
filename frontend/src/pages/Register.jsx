@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { registerUser } from '../api'
 
 export default function Register({ onNavigateLogin }) {
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -12,7 +12,7 @@ export default function Register({ onNavigateLogin }) {
     setError('')
     setLoading(true)
     try {
-      await registerUser(email, password)
+      await registerUser(username, password)
       onNavigateLogin()
     } catch (err) {
       setError(err.message)
@@ -37,14 +37,14 @@ export default function Register({ onNavigateLogin }) {
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-field">
-            <label>Email</label>
+            <label>Username</label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="your_username"
               required
-              autoComplete="email"
+              autoComplete="username"
             />
           </div>
           <div className="form-field">
