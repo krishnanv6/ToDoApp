@@ -1,4 +1,14 @@
 const BASE_URL = 'http://localhost:8000'
+const TOKEN_KEY = 'auth_token'
+
+function getToken() {
+  return localStorage.getItem(TOKEN_KEY)
+}
+
+function authHeaders() {
+  const token = getToken()
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
 
 async function request(path, options = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
@@ -13,9 +23,19 @@ async function request(path, options = {}) {
   return res.json()
 }
 
+async function authedRequest(path, options = {}) {
+  const headers = {
+    ...authHeaders(),
+    ...(options.headers || {}),
+  }
+  return request(path, { ...options, headers })
+}
+
 function jsonHeaders() {
   return { 'Content-Type': 'application/json' }
 }
+
+// --- Cookie-session auth (legacy) ---
 
 export function signup(username, password) {
   return request('/auth/signup', {
@@ -41,12 +61,32 @@ export function getMe() {
   return request('/auth/me')
 }
 
+// --- JWT auth ---
+
+export function loginWithToken(email, password) {
+  return request('/auth/login', {
+    method: 'POST',
+    headers: jsonHeaders(),
+    body: JSON.stringify({ email, password }),
+  })
+}
+
+export function registerUser(email, password) {
+  return request('/auth/register', {
+    method: 'POST',
+    headers: jsonHeaders(),
+    body: JSON.stringify({ email, password }),
+  })
+}
+
+// --- Todos (attach Bearer token when available) ---
+
 export function getTodos() {
-  return request('/todos')
+  return authedRequest('/todos')
 }
 
 export function createTodo({ title, priority, due_date }) {
-  return request('/todos', {
+  return authedRequest('/todos', {
     method: 'POST',
     headers: jsonHeaders(),
     body: JSON.stringify({ title, priority, due_date: due_date || null }),
@@ -54,7 +94,7 @@ export function createTodo({ title, priority, due_date }) {
 }
 
 export function updateTodo(id, patch) {
-  return request(`/todos/${id}`, {
+  return authedRequest(`/todos/${id}`, {
     method: 'PATCH',
     headers: jsonHeaders(),
     body: JSON.stringify(patch),
@@ -62,5 +102,5 @@ export function updateTodo(id, patch) {
 }
 
 export function deleteTodo(id) {
-  return request(`/todos/${id}`, { method: 'DELETE' })
+  return authedRequest(`/todos/${id}`, { method: 'DELETE' })
 }
