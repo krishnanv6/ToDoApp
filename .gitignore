@@ -34,3 +34,9 @@ yarn-error.log*
 .idea/
 .DS_Store
 Thumbs.db
+
+#Database SQL Lite
+*.sqlite3
+./.claude/settings.local.json
+
+claudetodo.db
